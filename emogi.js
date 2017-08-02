@@ -17,34 +17,38 @@
    placeCaretAtEnd = (el) => {
       el.focus();
       if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
-         var range = document.createRange();
-         range.selectNodeContents(el);
-         range.collapse(false);
-         var sel = window.getSelection();
-         sel.removeAllRanges();
-         sel.addRange(range);
+            var range = document.createRange();
+            range.selectNodeContents(el);
+            range.collapse(false);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
       } else if (typeof document.body.createTextRange != "undefined") {
-         var textRange = document.body.createTextRange();
-         textRange.moveToElementText(el);
-         textRange.collapse(false);
-         textRange.select();
+            var textRange = document.body.createTextRange();
+            textRange.moveToElementText(el);
+            textRange.collapse(false);
+            textRange.select();
       }
-}
+   };
 
 
    EMOGI.changeHandler = (_this) => {
       let valueOfInput = _this.innerHTML,
-         lastTwoChar,
+         twoChar,
          isShortCutFound = false;
 
       config.emogis.forEach((emogi, index) => {
-         valueOfInput = valueOfInput.replace(new RegExp( emogi.uniCode, 'gi'), emogi.spacialChar);
-         lastTwoChar = valueOfInput.substring(valueOfInput.length-2, valueOfInput.length);
-         if (lastTwoChar === emogi.sortCut) {
-            isShortCutFound = true;
-            valueOfInput = valueOfInput.substring(0, valueOfInput.length-2);
-            valueOfInput+= '<img src="'+ imgRoot + emogi.imgName +'.png" width="20" height="20">'
-         }
+            valueOfInput = valueOfInput.replace(new RegExp(emogi.uniCode, 'gi'), emogi.spacialChar);
+            if (valueOfInput.indexOf(emogi.sortCut) !== -1) {
+                  const indexOfSortCut = valueOfInput.indexOf(emogi.sortCut),
+                  lastIndexAfterShortCut = valueOfInput.substring(indexOfSortCut + emogi.sortCut.length , valueOfInput.length);;
+                  isShortCutFound = true;
+                  valueOfInput = valueOfInput.substring(0, indexOfSortCut);
+
+                  valueOfInput+= '<img src="'+ imgRoot + emogi.imgName +'.png" width="20" height="20">';
+                  valueOfInput+= lastIndexAfterShortCut;
+            }
+            
       });
       if (isShortCutFound) {
          isShortCutFound = false;
